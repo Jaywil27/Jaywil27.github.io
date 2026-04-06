@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Creating a self-hovering drone using PPO and neural networks | Super Cool Website</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="Creating a self-hovering drone using PPO and neural networks" />
+<meta name="author" content="Jaywil27" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Find more information and source code on my Github!" />
+<meta property="og:description" content="Find more information and source code on my Github!" />
+<link rel="canonical" href="http://localhost:4000/full_projects/drone-ppo/" />
+<meta property="og:url" content="http://localhost:4000/full_projects/drone-ppo/" />
+<meta property="og:site_name" content="Super Cool Website" />
+<meta property="og:type" content="website" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Creating a self-hovering drone using PPO and neural networks" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebPage","author":{"@type":"Person","name":"Jaywil27"},"description":"Find more information and source code on my Github!","headline":"Creating a self-hovering drone using PPO and neural networks","url":"http://localhost:4000/full_projects/drone-ppo/"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://localhost:4000/feed.xml" title="Super Cool Website" /></head>
+<body><header class="site-header" role="banner">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Super Cool Website</a><nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="/about/">About</a><a class="page-link" href="/projects/">Projects</a></div>
+      </nav></div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post">
+
+  <header class="post-header">
+    <h1 class="post-title">Creating a self-hovering drone using PPO and neural networks</h1>
+  </header>
+
+  <div class="post-content">
+    <h1 id="ppo-based-quadcopter-drone-project">PPO-Based Quadcopter Drone Project</h1>
+
+<hr />
+
+<h2 id="1-introduction">1. Introduction</h2>
+
+<h3 id="11-purpose-of-the-project">1.1 Purpose of the Project</h3>
+
+<p>The primary goal of this project was to build a quadrotor drone as a personal learning exercise. The focus was on improving skills across multiple domains, including:</p>
+
+<ul>
+  <li>Artificial Intelligence</li>
+  <li>Robotics</li>
+  <li>Reinforcement Learning</li>
+  <li>Electronics</li>
+  <li>Mechanical Design</li>
+  <li>3D Printing</li>
+</ul>
+
+<p>Rather than validating a specific hypothesis or contributing to formal research, the project was designed as a hands-on exploration. Success was defined by:</p>
+
+<ul>
+  <li>Successfully building the drone</li>
+  <li>Achieving stable hover (real or simulated)</li>
+</ul>
+
+<p>Additionally, the project served as a way to learn and integrate complex tools and workflows across hardware and software systems. :contentReference[oaicite:0]{index=0}</p>
+
+<hr />
+
+<h3 id="12-project-overview">1.2 Project Overview</h3>
+
+<p>This project implements a quadrotor drone controlled by a <strong>PPO (Proximal Policy Optimization) actor-critic model</strong>.</p>
+
+<p><strong>Key characteristics:</strong></p>
+<ul>
+  <li>Target hover height: <strong>1 meter</strong></li>
+  <li>No PID controller used</li>
+  <li>Direct thrust control via neural network</li>
+  <li>Fully trained in simulation</li>
+</ul>
+
+<p><strong>Performance summary:</strong></p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Metric</th>
+      <th>Value</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Stable hover range</td>
+      <td>0.90 – 0.99 m</td>
+    </tr>
+    <tr>
+      <td>Disturbance recovery</td>
+      <td>~2° – 5° optimal</td>
+    </tr>
+    <tr>
+      <td>Max recovery</td>
+      <td>~9–10°</td>
+    </tr>
+    <tr>
+      <td>Training environment</td>
+      <td>Simulation only</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>The system achieved partial stabilization, capable of maintaining hover but not fully robust to large disturbances. :contentReference[oaicite:1]{index=1}</p>
+
+<hr />
+
+<h3 id="13-objectives-and-goals">1.3 Objectives and Goals</h3>
+
+<p>The main objectives of the project were:</p>
+
+<ul>
+  <li>Build a functional quadrotor drone</li>
+  <li>Develop a reinforcement learning controller for hover</li>
+  <li>Learn complex interdisciplinary skills</li>
+</ul>
+
+<p><strong>Design philosophy:</strong></p>
+<ul>
+  <li>Prioritize learning over simplicity</li>
+  <li>Avoid traditional PID controllers intentionally</li>
+  <li>Build as much of the system from scratch as possible</li>
+</ul>
+
+<hr />
+
+<h3 id="14-scope-of-the-report">1.4 Scope of the Report</h3>
+
+<p>This report covers:</p>
+
+<ul>
+  <li>System architecture</li>
+  <li>Mechanical design</li>
+  <li>Electrical system</li>
+  <li>Flight controller and sensors</li>
+  <li>Reinforcement learning pipeline</li>
+  <li>Testing and validation</li>
+</ul>
+
+<p>Due to limited real-world testing, the focus is on implementation and observed behavior rather than formal validation.</p>
+
+<hr />
+
+<h3 id="15-background-on-drone-technology">1.5 Background on Drone Technology</h3>
+
+<p>Traditional drones rely on <strong>PID controllers</strong> for stabilization. These are:</p>
+
+<ul>
+  <li>Easier to implement</li>
+  <li>More robust</li>
+  <li>Industry standard</li>
+</ul>
+
+<p>This project instead uses reinforcement learning to directly map observations → motor thrust.</p>
+
+<p><strong>Why PPO?</strong></p>
+<ul>
+  <li>Prior familiarity</li>
+  <li>Proven use in autonomous systems</li>
+  <li>Stability compared to other RL algorithms</li>
+</ul>
+
+<hr />
+
+<h2 id="2-system-overview">2. System Overview</h2>
+
+<h3 id="21-system-components">2.1 System Components</h3>
+
+<p><strong>Hardware:</strong></p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Component</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Frame</td>
+      <td>3D printed PLA</td>
+    </tr>
+    <tr>
+      <td>Motors</td>
+      <td>1000 KV</td>
+    </tr>
+    <tr>
+      <td>Propellers</td>
+      <td>10 inch</td>
+    </tr>
+    <tr>
+      <td>ESC</td>
+      <td>45A Hacker ESC</td>
+    </tr>
+    <tr>
+      <td>Battery</td>
+      <td>11.1V 3S 2000mAh</td>
+    </tr>
+    <tr>
+      <td>Controller</td>
+      <td>ESP32</td>
+    </tr>
+    <tr>
+      <td>Sensors</td>
+      <td>IMU + ToF</td>
+    </tr>
+  </tbody>
+</table>
+
+<p><strong>Software:</strong></p>
+
+<ul>
+  <li>Isaac Lab / Isaac Sim</li>
+  <li>PhysX physics engine</li>
+  <li>PPO training via SKRL</li>
+  <li>Custom RL environment</li>
+</ul>
+
+<hr />
+
+<h3 id="22-system-architecture">2.2 System Architecture</h3>
+
+<p>The architecture can be divided into two major domains:</p>
+
+<ol>
+  <li><strong>Simulation and training architecture</strong></li>
+  <li><strong>Real-world inference and control architecture</strong></li>
+</ol>
+
+<h4 id="simulation-and-training-architecture">Simulation and Training Architecture</h4>
+
+<p>The simulated system included:</p>
+
+<ul>
+  <li>Physics simulation layer</li>
+  <li>Robot articulation and drone model</li>
+  <li>Reinforcement learning environment</li>
+  <li>PPO policy optimization and inference</li>
+</ul>
+
+<h4 id="real-world-architecture">Real-World Architecture</h4>
+
+<p>The real-world system included:</p>
+
+<ul>
+  <li>Sensor data collection</li>
+  <li>Filtering and normalization</li>
+  <li>External inference on a computer</li>
+  <li>Command transmission</li>
+  <li>DShot motor control through the ESP32 and ESC</li>
+</ul>
+
+<p>This separation allowed the drone to be trained in simulation while still supporting later physical deployment with real sensors and hardware control. :contentReference[oaicite:11]{index=11}</p>
+
+<hr />
+<p><strong>Drone Flying in Simulation:</strong></p>
+
+<p><img src="/assets/images/Drone-hover-isaacsim.gif" alt="Drone Demo" /></p>
+
+<hr />
+
+<h3 id="23-design-requirements">2.3 Design Requirements</h3>
+
+<ul>
+  <li>Must hover at <strong>1 meter</strong></li>
+  <li>Must be physically buildable</li>
+  <li>Must integrate RL control</li>
+</ul>
+
+<p><strong>Constraints:</strong></p>
+<ul>
+  <li>Limited indoor testing space</li>
+  <li>Safety concerns (no prop guards)</li>
+  <li>Sensor noise and drift</li>
+  <li>Hardware limitations (ESP32)</li>
+</ul>
+
+<hr />
+
+<h3 id="24-performance-targets">2.4 Performance Targets</h3>
+
+<table>
+  <thead>
+    <tr>
+      <th>Metric</th>
+      <th>Value</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Hover height</td>
+      <td>1 m</td>
+    </tr>
+    <tr>
+      <td>Stable range</td>
+      <td>0.90 – 0.99 m</td>
+    </tr>
+    <tr>
+      <td>Avg thrust</td>
+      <td>3–4 N</td>
+    </tr>
+    <tr>
+      <td>Max thrust</td>
+      <td>7.12 N</td>
+    </tr>
+    <tr>
+      <td>Flight time</td>
+      <td>~15 minutes</td>
+    </tr>
+    <tr>
+      <td>Disturbance recovery</td>
+      <td>2–5° (best)</td>
+    </tr>
+  </tbody>
+</table>
+
+<hr />
+
+<h2 id="3-design-process">3. Design Process</h2>
+
+<h3 id="31-methodology">3.1 Methodology</h3>
+
+<p>The design process was highly iterative and included:</p>
+
+<ul>
+  <li>CAD redesign cycles</li>
+  <li>Reward tuning</li>
+  <li>Sensor calibration</li>
+  <li>Simulation adjustments</li>
+</ul>
+
+<hr />
+
+<h3 id="32-tradeoffs">3.2 Tradeoffs</h3>
+
+<table>
+  <thead>
+    <tr>
+      <th>Decision</th>
+      <th>Tradeoff</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>RL vs PID</td>
+      <td>Harder but more educational</td>
+    </tr>
+    <tr>
+      <td>ESP32 vs flight controller</td>
+      <td>Simpler but less optimal</td>
+    </tr>
+    <tr>
+      <td>Simulation realism</td>
+      <td>Faster dev vs lower accuracy</td>
+    </tr>
+  </tbody>
+</table>
+
+<hr />
+
+<h3 id="33-final-design">3.3 Final Design</h3>
+
+<p>The final system includes:</p>
+
+<ul>
+  <li>PPO actor-critic controller</li>
+  <li>Isaac Lab simulation training</li>
+  <li>ESP32-based control system</li>
+  <li>3D printed frame</li>
+</ul>
+
+<hr />
+
+<h2 id="4-mechanical-design">4. Mechanical Design</h2>
+
+<h3 id="41-key-dimensions">4.1 Key Dimensions</h3>
+
+<table>
+  <thead>
+    <tr>
+      <th>Feature</th>
+      <th>Value</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Wing length</td>
+      <td>12.565 cm</td>
+    </tr>
+    <tr>
+      <td>Prop size</td>
+      <td>10 inch</td>
+    </tr>
+    <tr>
+      <td>Body height</td>
+      <td>3.786 cm</td>
+    </tr>
+    <tr>
+      <td>Weight</td>
+      <td>1.585 lbs</td>
+    </tr>
+  </tbody>
+</table>
+
+<hr />
+
+<h3 id="42-structural-issues">4.2 Structural Issues</h3>
+
+<p>Main failure points:</p>
+<ul>
+  <li>Wing-to-body joints</li>
+  <li>Motor mount alignment</li>
+</ul>
+
+<hr />
+
+<h2 id="5-electrical-system">5. Electrical System</h2>
+
+<h3 id="51-power-system">5.1 Power System</h3>
+
+<table>
+  <thead>
+    <tr>
+      <th>Component</th>
+      <th>Value</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Battery</td>
+      <td>11.1V 3S 2000mAh</td>
+    </tr>
+    <tr>
+      <td>Flight time</td>
+      <td>~15 minutes</td>
+    </tr>
+  </tbody>
+</table>
+
+<hr />
+
+<h2 id="6-flight-controller-and-sensors">6. Flight Controller and Sensors</h2>
+
+<h3 id="61-controller">6.1 Controller</h3>
+
+<ul>
+  <li>ESP32 used for:
+    <ul>
+      <li>DShot output</li>
+      <li>Sensor integration</li>
+      <li>Emergency stop</li>
+    </ul>
+  </li>
+</ul>
+
+<hr />
+
+<h3 id="62-sensors">6.2 Sensors</h3>
+
+<table>
+  <thead>
+    <tr>
+      <th>Sensor</th>
+      <th>Purpose</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>IMU</td>
+      <td>Orientation + angular velocity</td>
+    </tr>
+    <tr>
+      <td>ToF</td>
+      <td>Height measurement</td>
+    </tr>
+  </tbody>
+</table>
+
+<hr />
+
+<h3 id="63-sensor-challenges">6.3 Sensor Challenges</h3>
+
+<ul>
+  <li>Drift issues</li>
+  <li>Noise handling</li>
+  <li>Orientation mismatch (major bug)</li>
+</ul>
+
+<hr />
+
+<h2 id="7-software-and-control-system">7. Software and Control System</h2>
+
+<h3 id="71-control-strategy">7.1 Control Strategy</h3>
+
+<ul>
+  <li>PPO actor-critic model</li>
+  <li>Continuous action space (4 motors)</li>
+</ul>
+
+<hr />
+
+<h3 id="72-network-architecture">7.2 Network Architecture</h3>
+
+<table>
+  <thead>
+    <tr>
+      <th>Layer</th>
+      <th>Size</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Input</td>
+      <td>state</td>
+    </tr>
+    <tr>
+      <td>Hidden</td>
+      <td>512 → 256</td>
+    </tr>
+    <tr>
+      <td>Output</td>
+      <td>4 (motors)</td>
+    </tr>
+  </tbody>
+</table>
+
+<hr />
+
+<h3 id="73-training-details">7.3 Training Details</h3>
+
+<table>
+  <thead>
+    <tr>
+      <th>Parameter</th>
+      <th>Value</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Steps</td>
+      <td>20k – 50k</td>
+    </tr>
+    <tr>
+      <td>Convergence</td>
+      <td>~7k steps</td>
+    </tr>
+    <tr>
+      <td>Learning rate</td>
+      <td>1e-4</td>
+    </tr>
+    <tr>
+      <td>Batch size</td>
+      <td>~1000</td>
+    </tr>
+  </tbody>
+</table>
+
+<hr />
+
+<h2 id="9-testing-and-validation">9. Testing and Validation</h2>
+
+<h3 id="91-performance-metrics">9.1 Performance Metrics</h3>
+
+<table>
+  <thead>
+    <tr>
+      <th>Metric</th>
+      <th>Value</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Hover target</td>
+      <td>1 m</td>
+    </tr>
+    <tr>
+      <td>Stable range</td>
+      <td>0.90–0.99 m</td>
+    </tr>
+    <tr>
+      <td>Max tilt recovery</td>
+      <td>~9°</td>
+    </tr>
+    <tr>
+      <td>Disturbance range</td>
+      <td>2–5°</td>
+    </tr>
+    <tr>
+      <td>Avg thrust</td>
+      <td>3–4 N</td>
+    </tr>
+  </tbody>
+</table>
+
+<hr />
+
+<h3 id="92-testing-limitations">9.2 Testing Limitations</h3>
+
+<ul>
+  <li>Indoor only testing</li>
+  <li>No prop guards</li>
+  <li>Limited real-world validation</li>
+</ul>
+
+<hr />
+
+<h2 id="10-conclusion">10. Conclusion</h2>
+
+<p>This project demonstrates that reinforcement learning can be used to control a quadrotor drone for hover tasks, though with limited robustness.</p>
+
+<p>While not as practical as PID-based systems, the project successfully achieved its goal of:</p>
+
+<ul>
+  <li>Building a working drone</li>
+  <li>Applying RL to a real-world control problem</li>
+  <li>Developing interdisciplinary engineering skills</li>
+</ul>
+
+  </div>
+
+</article>
+
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Super Cool Website</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Jaywil27</li><li><a class="u-email" href="mailto:your-email@domain.com">your-email@domain.com</a></li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"><li><a href="https://github.com/Jaywil27"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#github"></use></svg> <span class="username">Jaywil27</span></a></li></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>Find more information and source code on my Github!
+</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>
