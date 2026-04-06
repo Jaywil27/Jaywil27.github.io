@@ -9,8 +9,6 @@ layout: home
 ---
 Welcome to my website!
 
-Welcome to my website!
-# James Williams
 
 Cybersecurity graduate student focused on AI-driven security systems, reinforcement learning, and intelligent autonomous systems.
 
